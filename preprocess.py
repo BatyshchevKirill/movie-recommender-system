@@ -1,7 +1,9 @@
-import argparse
-import os
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
+import os
+import itertools
+import collections
+import networkx as nx
+import torch
 
 movie_col = [
     "movie_id", "movie_title", "release_date", "video_release_date", "imbd_url", "unknown", "action", "adventure",
@@ -47,6 +49,45 @@ def preprocess(data_folder: str = 'data/raw/ml-100k/', save_folder: str = 'data/
     train_data.to_csv(os.path.join(save_folder, "train.csv"))
     test_data.to_csv(os.path.join(save_folder, "test.csv"))
 
+def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size:int = 16):
+    users = pd.read_csv(os.path.join(dirpath, 'users.csv'), index_col=0)
+    rates = pd.read_csv(os.path.join(dirpath, 'train.csv'), index_col=0)
+    pairs = []
+    grouped = rates.groupby(['item_id', 'rating'])
+
+    for key, group in grouped:
+        pairs.extend(list(itertools.combinations(group['user_id'], 2)))
+    counter = collections.Counter(pairs)
+    alpha *= len(rates.item_id.unique())
+
+    edge_list = map(list, collections.Counter(el for el in counter.elements() if counter[el] >= alpha).keys())
+
+    G = nx.Graph()
+
+    for i in edge_list:
+        G.add_edge(i[0], i[1], weight=1)
+
+    pr = nx.pagerank(G.to_directed())
+    users['pagerank'] = users.index.map(pr)
+    users['pagerank'] /= float(users['pagerank'].max())
+    dc = nx.degree_centrality(G)
+    users['degree_centrality'] = users.index.map(dc)
+    users['degree_centrality'] /= float(users['degree_centrality'].max())
+    cc = nx.closeness_centrality(G)
+    users['closeness_centrality'] = users.index.map(cc)
+    users['closeness_centrality'] /= float(users['closeness_centrality'].max())
+    bc = nx.betweenness_centrality(G)
+    users['betweenness_centrality'] = users.index.map(bc)
+    users['betweenness_centrality'] /= float(users['betweenness_centrality'].max())
+    lc = nx.load_centrality(G)
+    users['load_centrality'] = users.index.map(lc)
+    users['load_centrality'] /= float(users['load_centrality'].max())
+    nd = nx.average_neighbor_degree(G, weight='weight')
+    users['average_neighbor_degree'] = users.index.map(nd)
+    users['average_neighbor_degree'] /= float(users['average_neighbor_degree'].max())
+    X_train = users[users.columns[1:]].fillna(0)
+    X_train = torch.tensor(X_train.values)
+    return torch.utils.data.DataLoader(X_train, batch_size=batch_size)
 
 if __name__ == "__main__":
     preprocess()
