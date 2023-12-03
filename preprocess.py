@@ -93,4 +93,4 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 
 
 
 if __name__ == "__main__":
-    preprocess(test_name='u2.test')
+    preprocess()
