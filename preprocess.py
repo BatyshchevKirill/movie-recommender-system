@@ -4,6 +4,7 @@ import itertools
 import collections
 import networkx as nx
 import torch
+from sklearn.preprocessing import OneHotEncoder
 
 movie_col = [
     "movie_id", "movie_title", "release_date", "video_release_date", "imbd_url", "unknown", "action", "adventure",
