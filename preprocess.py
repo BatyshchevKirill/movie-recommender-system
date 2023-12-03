@@ -87,7 +87,9 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 
     x_train = users[users.columns[1:]].fillna(0)
     x_train = torch.tensor(x_train.values, dtype=torch.float32)
     x_train = torch.utils.data.TensorDataset(x_train)
-    return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True, pin_memory=True, random_state=42)
+    g = torch.Generator()
+    g.manual_seed(42)
+    return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True, pin_memory=True, generator=g)
 
 
 if __name__ == "__main__":
