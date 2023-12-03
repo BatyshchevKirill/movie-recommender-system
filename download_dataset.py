@@ -10,12 +10,16 @@ if __name__ == "__main__":
 
     if response.status_code == 200:
         file_path = DEST_FOLDER + "/" + DATA_URL.split("/")[-1]
+
+        # Save archive
         with open(file_path, 'wb') as f:
             f.write(response.content)
 
+        # Extract data
         with ZipFile(file_path, 'r') as zip_ref:
             zip_ref.extractall(DEST_FOLDER)
 
+        # Remove archive
         os.remove(file_path)
         print("Downloaded the dataset to", DEST_FOLDER)
     else:

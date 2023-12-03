@@ -1,5 +1,6 @@
-import pandas as pd
 import argparse
+
+import pandas as pd
 
 
 if __name__ == "__main__":
@@ -15,17 +16,20 @@ if __name__ == "__main__":
     parser.add_argument("-mx", "--max_rating", default=4.8)
     args = parser.parse_args()
 
+    # Read the data
     users = pd.read_csv(args.users, index_col=0)
     ratings = pd.read_csv(args.ratings, index_col=0)
     cluster = users.iloc[int(args.user_id), 0]
     ratings = ratings.iloc[:, cluster]
 
     if args.mode == "eval":
+        # Predict the rating of a movie
         if args.film_id is None:
             parser.error("Film id should be present for rating prediction mode")
         rating = ratings[int(args.film_id)]
         print(f"The predicted rating for the film is: {rating: .4f}")
     else:
+        # Make k recommendations
         ratings = ratings.sort_values(ascending=False)
         ratings = ratings[float(args.min_rating) <= ratings.iloc[:]]
         ratings = ratings[ratings.iloc[:] <= float(args.max_rating)]
