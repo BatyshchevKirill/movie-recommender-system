@@ -1,8 +1,10 @@
 import pandas as pd
+import argparse
 import numpy as np
 from sklearn.cluster import KMeans
 
 from autoencoder import train_and_encode
+from preprocess import create_loader
 
 
 def train_kmeans(
@@ -67,15 +69,36 @@ def train_kmeans(
     clustered_rating.to_csv(save_path)
     print("Saved results to", save_path)
 
-# if __name__ == "__main__":
-#     train_and_encode(loader: torch.utils.data.DataLoader,
-#     input_dim: int = 28,
-#     hidden_dim: int = 16,
-#     enc_dim: int = 8,
-#     epochs: int = 100,
-#     noise: float = 0.0,
-#     l1_weight: float = 0.0,
-#     l2_weight: float = 0.0,
-#     cpt_folder: str = "models/",
-#     data_folder: str = "data/interim/"
-#     ):
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dirpath", default='data/interim/')
+    parser.add_argument("-a", "--alpha", default=0.01)
+    parser.add_argument("-b", "--batch_size", default=16)
+    parser.add_argument("-id", "--input_dim", default=28)
+    parser.add_argument("-hd", "--hidden_dim", default=16)
+    parser.add_argument("-ed", "--enc_dim", default=8)
+    parser.add_argument("-e", "--epochs", default=100)
+    parser.add_argument("-n", "--noise", default=0.0)
+    parser.add_argument("-l1", "--l1_weight", default=0.0)
+    parser.add_argument("-l2", "--l2_weight", default=0.0)
+    parser.add_argument("-c", "--cpt_folder", default="models/")
+    parser.add_argument('-n', "-cluster_number", default=10)
+
+    args = parser.parse_args()
+
+    x_train = create_loader(dirpath=args.dirpath, alpha=float(args.alpha), batch_size=int(args.batch_size))
+    train_and_encode(x_train,
+                     input_dim=int(args.input_dim),
+                     hidden_dim=int(args.hidden_dim),
+                     enc_dim=int(args.enc_dim),
+                     epochs=int(args.epochs),
+                     noise=float(args.noise),
+                     l1_weight=float(args.l1_weight),
+                     l2_weight=float(args.l2_weight),
+                     cpt_folder=args.cpt_folder,
+                     data_folder=args.dirpath
+                     )
+    name = f"encoded_ae_{args.hidden_dim}_{args.enc_dim}_{args.epochs}_{args.noise}_{args.l1_weight:.4f}_{args.l2_weight:.4f}".replace(".", "_")
+    train_kmeans(name, n_clusters=int(args.cluster_number))
+
