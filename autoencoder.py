@@ -55,7 +55,7 @@ def train_and_encode(loader: torch.utils.data.DataLoader,
                      l1_weight: float = 0.0,
                      l2_weight: float = 0.0,
                      cpt_folder: str = "models/",
-                     data_folder: str = "data/interim"
+                     data_folder: str = "data/interim/"
                      ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = Autoencoder(input_dim, hidden_dim, enc_dim, l1_weight, l2_weight, device).to(device)
