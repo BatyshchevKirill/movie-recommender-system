@@ -6,3 +6,4 @@ scikit-learn
 networkx
 torch
 tqdm
+numpy

@@ -22,9 +22,8 @@ def preprocess(data_folder: str = 'data/raw/ml-100k/', save_folder: str = 'data/
     items.release_date = pd.to_datetime(items.release_date, format='%d-%b-%Y')
     items.release_date = (items.release_date - pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
     first_film_date = items.release_date.min()
-    items.release_date = (items.release_date - first_film_date) / items.release_date.max()
-    items.reset_index(inplace=True)
-    items.drop(['video_release_date', 'imbd_url', 'movie_id'], axis=1, inplace=True)
+    items.release_date = (items.release_date - first_film_date) / (items.release_date.max() - first_film_date)
+    items.drop(['video_release_date', 'imbd_url'], axis=1, inplace=True)
 
     users = pd.read_csv(os.path.join(data_folder, "u.user"), sep="|", names=user_col, index_col=user_col[0], encoding="latin-1")
     users.reset_index(inplace=True)
@@ -40,8 +39,6 @@ def preprocess(data_folder: str = 'data/raw/ml-100k/', save_folder: str = 'data/
     test_data = pd.read_csv(os.path.join(data_folder, test_name), sep='\t', names=["user_id", "item_id", "rating", "timestamp"])
     train_data.user_id = train_data.user_id.apply(lambda x: x-1)
     test_data.user_id = test_data.user_id.apply(lambda x: x - 1)
-    train_data.item_id = train_data.item_id.apply(lambda x: x-1)
-    test_data.item_id = test_data.item_id.apply(lambda x: x - 1)
     train_data.drop("timestamp", axis=1, inplace=True)
     test_data.drop("timestamp", axis=1, inplace=True)
 
@@ -90,7 +87,7 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 
     x_train = users[users.columns[1:]].fillna(0)
     x_train = torch.tensor(x_train.values, dtype=torch.float32)
     x_train = torch.utils.data.TensorDataset(x_train)
-    return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True, pin_memory=True)
+    return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True, pin_memory=True, random_state=42)
 
 
 if __name__ == "__main__":
