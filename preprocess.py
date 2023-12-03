@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import argparse
 import itertools
 import collections
 import networkx as nx
@@ -93,4 +94,10 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 
 
 
 if __name__ == "__main__":
-    preprocess()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--data_folder", default="data/raw/ml-100k/")
+    parser.add_argument("-s", "--save_folder", default="data/interim")
+    parser.add_argument("-tr", "--train_filename", default="u1.base")
+    parser.add_argument("-t", "--test_filename", default="u1.test")
+    args = parser.parse_args()
+    preprocess(args.data_folder, args.save_folder, args.train_filename, args.test_filename)

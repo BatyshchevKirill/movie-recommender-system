@@ -6,7 +6,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["eval", "rec"])
     parser.add_argument("user_id")
-    parser.add_argument("-u", "--users", default="data/interim/users_clustered_ae_16_8_8.csv")
+    parser.add_argument("-u", "--users", default="data/interim/clustered_ae_16_8_100_0_0_0_0000_0_0000.csv")
     parser.add_argument("-r", "--ratings", default="data/interim/ratings.csv")
     parser.add_argument("-m", "--movies", default="data/interim/films.csv")
     parser.add_argument("-f", "--film_id", default=None)
