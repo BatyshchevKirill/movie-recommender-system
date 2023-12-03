@@ -1,0 +1,4 @@
+[1] https://grouplens.org/datasets/movielens/100k/ - the dataset used in the task
+[2] https://paperswithcode.com/sota/collaborative-filtering-on-movielens-100k - the website with benchmark algorithms
+[3] https://arxiv.org/pdf/2111.11293v2.pdf - the article describing the state-of-the-art solution
+[4] https://github.com/huungociter/Movies-Recommendation-System/blob/master/Moviesrecommendation.ipynb - the github with implementation of the article with comparable with mine results. Some details of my implementation were inspired by this.
