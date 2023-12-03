@@ -4,6 +4,7 @@ from sklearn.cluster import KMeans
 
 from autoencoder import train_and_encode
 
+
 def train_kmeans(
         encoded_users_names: str,
         data_folder: str = "data/interim/",
@@ -64,6 +65,7 @@ def train_kmeans(
 
                 clustered_rating.at[index, cluster] = mean
     clustered_rating.to_csv(save_path)
+    print("Saved results to", save_path)
 
 # if __name__ == "__main__":
 #     train_and_encode(loader: torch.utils.data.DataLoader,
