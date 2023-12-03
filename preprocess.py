@@ -88,7 +88,7 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 
     users['average_neighbor_degree'] = users.index.map(nd)
     users['average_neighbor_degree'] /= float(users['average_neighbor_degree'].max())
     x_train = users[users.columns[1:]].fillna(0)
-    x_train = torch.tensor(x_train.values)
+    x_train = torch.tensor(x_train.values, dtype=torch.float32)
     return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
 
 if __name__ == "__main__":
