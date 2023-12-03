@@ -62,7 +62,7 @@ def prec_rec(test: pd.DataFrame, users: pd.DataFrame, ratings: pd.DataFrame):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("metric", choices=["rmse", "prf"])
-    parser.add_argument("-u", "--users", default="data/interim/users.csv")
+    parser.add_argument("-u", "--users", default="data/interim/users_clustered_ae_16_8_8.csv")
     parser.add_argument("-t", "--test", default="data/interim/test.csv")
     parser.add_argument("-r", "--ratings", default="data/interim/ratings.csv")
     args = parser.parse_args()
