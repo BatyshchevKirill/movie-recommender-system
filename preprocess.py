@@ -29,7 +29,7 @@ def preprocess(data_folder: str = 'data/raw/ml-100k/', save_folder: str = 'data/
     users = pd.read_csv(os.path.join(data_folder, "u.user"), sep="|", names=user_col, index_col=user_col[0], encoding="latin-1")
     users.reset_index(inplace=True)
     users.age = users.age / users.age.max()
-    users.gender = users.gender.str.replace("M", "1").replace("F", "-1")
+    users.gender = users.gender.str.replace("M", "1").replace("F", "0")
     encoder = OneHotEncoder(sparse_output=False)
     encoded_data = encoder.fit_transform(users[['occupation']])
     encoded_df = pd.DataFrame(encoded_data, columns=encoder.categories_[0])
