@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
+import pandas as pd
 
 
 class Autoencoder(nn.Module):
@@ -82,5 +83,22 @@ def train_and_encode(loader: torch.utils.data.DataLoader,
 
     name = f"ae_{hidden_dim}_{enc_dim}_{epochs}_{noise}_{l1_weight:.4f}_{l2_weight:.4f}".replace(".", "_")
     torch.save(model, cpt_folder + name + '.pt')
+
+    model.eval()
+
+    encoded_data_list = []
+
+    with torch.no_grad():
+        for batch in loader:
+            input_data = batch[0].to(device)
+            encoded_data = model.encode(input_data)
+            encoded_data_list.append(encoded_data.cpu().numpy())
+
+    concatenated_data = np.concatenate(encoded_data_list, axis=0)
+
+    column_names = [str(i) for i in range(concatenated_data.shape[1])]
+    encoded_dataframe = pd.DataFrame(concatenated_data, columns=column_names)
+
+    encoded_dataframe.to_csv(data_folder + "encoded_" + name + ".csv", index=False)
 
 
