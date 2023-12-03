@@ -16,7 +16,7 @@ def rmse(test: pd.DataFrame, ratings: pd.DataFrame, users: pd.DataFrame):
     return error ** 0.5
 
 
-def metrics_single_user(test: pd.DataFrame, ratings: pd.Series, k: int = 20):
+def metrics_single_user(test: pd.DataFrame, ratings: pd.Series):
     tp = 0
     fp = 0
     fn = 0
@@ -61,7 +61,7 @@ def prec_rec(test: pd.DataFrame, users: pd.DataFrame, ratings: pd.DataFrame):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("metric", choices=["rmse", "prf"], required=True)
+    parser.add_argument("metric", choices=["rmse", "prf"])
     parser.add_argument("-u", "--users", default="data/interim/users.csv")
     parser.add_argument("-t", "--test", default="data/interim/test.csv")
     parser.add_argument("-r", "--ratings", default="data/interim/ratings.csv")
