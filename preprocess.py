@@ -50,7 +50,8 @@ def preprocess(data_folder: str = 'data/raw/ml-100k/', save_folder: str = 'data/
     train_data.to_csv(os.path.join(save_folder, "train.csv"))
     test_data.to_csv(os.path.join(save_folder, "test.csv"))
 
-def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size:int = 16):
+
+def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size: int = 16):
     users = pd.read_csv(os.path.join(dirpath, 'users.csv'), index_col=0)
     rates = pd.read_csv(os.path.join(dirpath, 'train.csv'), index_col=0)
     pairs = []
@@ -86,9 +87,9 @@ def create_loader(dirpath: str = 'data/interim/', alpha=0.01, batch_size:int = 1
     nd = nx.average_neighbor_degree(G, weight='weight')
     users['average_neighbor_degree'] = users.index.map(nd)
     users['average_neighbor_degree'] /= float(users['average_neighbor_degree'].max())
-    X_train = users[users.columns[1:]].fillna(0)
-    X_train = torch.tensor(X_train.values)
-    return torch.utils.data.DataLoader(X_train, batch_size=batch_size)
+    x_train = users[users.columns[1:]].fillna(0)
+    x_train = torch.tensor(x_train.values)
+    return torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
 
 if __name__ == "__main__":
     preprocess()
