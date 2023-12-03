@@ -70,12 +70,79 @@ alpha similar ratings for different movies.
 3. The data is concatenated with the users' demographic information.
 4. The user information is passed to a 5 layer autoencoder to reduce the
 dimensionality of the data.
-5. The resulting data is clustered using k-means algorithm
+5. The resulting user data is clustered using k-means algorithm
+6. For each film its average rating is calculated within each cluster.
+If no users watched a film within a cluster, then we search for similar
+films. Authors do not specify the way how they define the similarity of
+movies, but I assumed they used no complex algorithm and measured the 
+similarity based on the genre and release date information.
+7. Users rating of a movie is measured as a rating of the user's cluster
+in the generated lookup table. 
+8. If recommendations are to be made, we sort the movies by rating within
+a cluster, and recommend top k movies (excluding ones with too high rating
+because these ratings are likely to be made by too few users)
 
 # Training Process
+The training process included the following steps:
+- Generating the user graph data. For this I used alpha=0.01 proposed in the
+article and networkx library to extract the features. The demographic features
+were encoded or scaled. 
+- Training the autoencoder for dimensionality reduction. The architecture
+of the encoder part was the following 32 -> 16 -> ReLU -> 8 -> ReLU. I
+trained it with the recommended hyperparameters: 100 epochs (even though the
+loss stopped dropping after the first one), Adam optimizer with starting
+learning rate of 0.01, and MeanSquaredError as a loss. 
+- After that k-means algorithm with k = 10 was trained on the encoded data.
+- Then the ratings were calculated for each movie for each cluster. The table
+was saved and used for predictions in the future.
 # Model Advantages and Disadvantages
-...
+## Advantages:
+- The model is the current state-of-the-art for the dataset
+- It utilizes the demographic information about users as well as the information about ratings
+- The model can deal with unknown users and items
+- The training complexity is low
+## Disadvantages:
+- The actual results are not perfect
+- Insertion of new users is costly as it requires recalculating metrics on the graph
+- The model poorly deals with the movies that are not well rated by the people within a cluster
 # Evaluation
-...
+To measure the goodness of my model's predictions I used the following metrics:
+- **Root Mean Squared Error** for evaluating rating prediction
+- **Precision** and **recall** for measuring the quality of recommendation. Note
+that as test set does not allow us to measure the true recall and precision, 
+I measured the metrics based on whether test items are likely to be recommended to
+a user or not. 
+
+My results for the metrics are the following:<br>
+
+|           | RMSE  | Precision | Recall |
+|-----------|-------|-----------|--------|
+| Train     | 0.922 | 0.7202    | 0.7575 |
+| Test      | 1.106 | 0.6749    | 0.6945 |
+
+Approximate RMSE for an average guess was 1.35, so the model is performing good enough.
+However, we can see that the result for training set is much better than the result
+in testing set. The main difference between the training and testing sets is that
+there are films that were not rated by a cluster in a train set, but occur in a test set.
+So, I suggest that the problem of the metric gap is that the approach of computing
+similarity of unrated films with rated ones is not efficient enough. Maybe we should
+use more complex methods (embeddings, for example) for finding similar movies.
 # Results
-...
+The results are good, they are significantly better than random, approximately
+the same with another implementation [4] (1.10, 0.67, 0.72), and reasonably worse than ones
+stated in the article [3] (0.89, 0.77, and 0.8). So, overall the implementation of recommendation system
+on the movielens dataset can be considered successfull
+
+Future work:
+- Implementing a more efficient way of dealing with unknown movies, including not recommending them at all
+- Trying different methods for dimensionality reduction. Trying to run the clustering
+algorithm without dimensionality reduction
+- Implementing my own GridSearch, not using the suggested hyperparameters
+
+Summing up, in this work I successfully implemented a movie recommendation system
+based on the previous ratings and user demographic data. 
+The dynamic nature of user interactions with movie content highlights the need for 
+adaptive approaches to recommendation systems. Moving forward, leveraging
+advancements in ML and DL will be crucial in further enhancing the accuracy and
+personalization capabilities of RecSys, ensuring they remain helpful
+in delivering curated and enjoyable content experiences for users.
